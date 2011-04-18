@@ -39,6 +39,7 @@ has 'coordinator' => (
         $coordinator->connect( $self->coordinator_address );
         $coordinator;
     },
+    clearer => '_clear_coordinator'
 );
 
 has 'subscriber' => (
@@ -51,7 +52,14 @@ has 'subscriber' => (
         $subscriber->connect( $self->publisher_address );
         $subscriber;
     },
+    clearer => '_clear_subscriber'
 );
+
+sub BUILD {
+    my $self = shift;
+    $self->subscriber;
+    $self->coordinator;
+}
 
 # method ...
 
@@ -68,6 +76,24 @@ sub get_message {
     $message =~ s/^$key //;
     $message;
 }
+
+# ...
+
+sub reconnect {
+    my $self = shift;
+    $self->subscriber;
+    $self->coordinator;
+}
+
+sub close {
+    my $self = shift;
+    $self->subscriber->close();
+    $self->_clear_subscriber;
+    $self->coordinator->close();
+    $self->_clear_coordinator;
+}
+
+sub DEMOLISH { (shift)->close }
 
 __PACKAGE__->meta->make_immutable;
 
