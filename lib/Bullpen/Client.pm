@@ -107,5 +107,17 @@ __END__
 
   use Bullpen::Client;
 
+  my $client = Bullpen::Client->new(
+      coordinator_address => 'tcp://127.0.0.1:6666',
+      publisher_address   => 'tcp://127.0.0.1:7777',
+  );
+
+  $client->send_request( 'some message' );
+  while ( my $message = $client->get_message ) {
+      say $message;
+  }
+
+  $client->close;
+
 =head1 DESCRIPTION
 
