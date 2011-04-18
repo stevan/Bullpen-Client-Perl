@@ -26,6 +26,8 @@ for ( 0 .. 10 ) {
         is($message, "[$count]", '... got the expected message');
     }
     is($count, 50, '... got the expected number of messages');
+    $client->close;
+    $client->reconnect;
 }
 
 $client->close;
